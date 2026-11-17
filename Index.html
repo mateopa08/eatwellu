@@ -1,0 +1,965 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="description" content="EatWellU: recetas según tu presupuesto, lugares cerca de la Universidad de los Andes y dónde comer en tus huecos entre clases.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>EatWellU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
+<style>
+/* Layout: columna única para celular; tema claro pastel único (menta, durazno, lavanda, mantequilla) con texto oscuro para buen contraste */
+:root {
+  color-scheme: light;
+  --bg: #F5F8FB;
+  --surface: #FFFFFF;
+  --ink: #1F2937;
+  --muted: #4B5563;
+  --line: #E3E8EF;
+  --green: #1F6F4A;
+  --green-soft: #DDF4E6;
+  --mint: #BDEBD0;
+  --tomato: #B4471A;
+  --tomato-soft: #FFE6D8;
+  --amber-ink: #7A5600;
+  --amber-soft: #FFF1C2;
+  --lav: #E6E1FB;
+  --lav-ink: #3F318F;
+  --chip: #EEF2F7;
+  --on-green: #12402A;
+  --font-display: "Manrope", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 96px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--tomato); outline-offset: 2px; }
+.wrap { max-width: 760px; margin: 0 auto; }
+
+header.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--surface); border-bottom: 1px solid var(--line);
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding-block: 12px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.logo { width: 32px; height: 32px; border-radius: 9px; background: var(--mint); display: grid; place-items: center; flex: 0 0 auto; }
+.logo svg { width: 20px; height: 20px; }
+.brand h1 { margin: 0; font-family: var(--font-display); font-size: 21px; font-weight: 800; letter-spacing: -0.02em; }
+.brand h1 b { color: var(--tomato); font-weight: 800; }
+.brand small { margin-left: auto; color: var(--muted); font-size: 12px; text-align: right; }
+.search { margin-top: 10px; }
+.search input {
+  width: 100%; padding: 11px 14px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+}
+.search input::placeholder { color: var(--muted); }
+
+main { padding-top: 16px; }
+h2.view-title { font-family: var(--font-display); font-size: 23px; font-weight: 800; letter-spacing: -0.01em; margin: 0 0 4px; text-wrap: balance; }
+.view-sub { color: var(--muted); margin: 0 0 14px; max-width: 62ch; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+.panel h3 { margin: 0 0 4px; font-family: var(--font-display); font-size: 17px; font-weight: 700; }
+.panel p { margin: 0 0 10px; color: var(--muted); }
+
+.budget-input { display: flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 4px 6px 4px 14px; margin-bottom: 12px; }
+.budget-input span { font-weight: 700; font-size: 20px; color: var(--muted); }
+.budget-input input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: 22px; font-weight: 700; padding: 8px 0; font-variant-numeric: tabular-nums; }
+.budget-input input:focus { outline: none; }
+.budget-input:focus-within { border-color: #9FDDB9; box-shadow: 0 0 0 3px var(--green-soft); }
+.budget { display: flex; align-items: center; gap: 12px; }
+.budget input[type="range"] { flex: 1; min-width: 0; -webkit-appearance: none; appearance: none; height: 8px; border-radius: 999px; background: var(--green-soft); }
+.budget input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; border: 3px solid #5DBB8A; cursor: pointer; }
+.budget input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #FFFFFF; border: 3px solid #5DBB8A; cursor: pointer; }
+.budget input[type="range"]::-moz-range-track { height: 8px; border-radius: 999px; background: var(--green-soft); }
+.quick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.quick .chip { font-variant-numeric: tabular-nums; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.chip {
+  border: 1px solid transparent; background: var(--chip); color: var(--ink);
+  border-radius: 999px; padding: 7px 13px; cursor: pointer; font-size: 13px; font-weight: 500;
+}
+.chip[aria-pressed="true"] { background: var(--lav); color: var(--lav-ink); border-color: #C9BFF5; font-weight: 600; }
+
+.count { color: var(--muted); font-size: 13px; margin: 0 0 10px; font-variant-numeric: tabular-nums; }
+.grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0;
+}
+.card-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.card h4 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.3; text-wrap: balance; }
+.price { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 12px; color: var(--muted); font-size: 13px; }
+.tag { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.tag.health { background: var(--green-soft); color: var(--green); }
+.tag.cheap { background: var(--amber-soft); color: var(--amber-ink); }
+.tag.neutral { background: var(--chip); color: var(--ink); }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+.status { font-size: 13px; font-weight: 600; }
+.status.open { color: var(--green); }
+.status.closed { color: var(--tomato); }
+.demand { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+.dots { display: inline-flex; gap: 3px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.dots[data-level="1"] i:nth-child(1),
+.dots[data-level="2"] i:nth-child(-n+2),
+.dots[data-level="3"] i { background: var(--tomato); }
+.actions { display: flex; gap: 8px; margin-top: auto; padding-top: 4px; flex-wrap: wrap; }
+.btn {
+  border-radius: 10px; padding: 9px 14px; border: 1px solid #9FDDB9;
+  background: var(--mint); color: var(--on-green); cursor: pointer; font-weight: 600; font-size: 14px;
+  text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost[aria-pressed="true"] { background: var(--tomato-soft); border-color: var(--tomato); color: var(--tomato); }
+.btn.link { background: transparent; color: var(--green); border-color: transparent; padding-inline: 4px; }
+.empty { color: var(--muted); padding: 24px 8px; text-align: center; }
+.note { font-size: 12px; color: var(--muted); margin-top: 14px; }
+
+/* Horario */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-row .full { grid-column: 1 / -1; }
+label.f { display: grid; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 500; }
+label.f input, label.f select {
+  padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); min-width: 0; width: 100%;
+}
+.daybar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 12px; }
+.daybar .chip { flex: 0 0 auto; min-width: 46px; }
+.timeline { position: relative; height: 44px; border-radius: 10px; background: var(--green-soft); overflow: hidden; margin: 6px 0 4px; }
+.timeline .cls { position: absolute; top: 0; bottom: 0; background: #C9BFF5; border-left: 2px solid #FFFFFF; }
+.timeline .cls span { position: absolute; inset: 0; display: grid; place-items: center; color: var(--lav-ink); font-size: 11px; font-weight: 600; overflow: hidden; white-space: nowrap; padding: 0 4px; }
+.ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 8px; flex-wrap: wrap; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend .l-class::before { background: #C9BFF5; }
+.legend .l-free::before { background: var(--green-soft); border: 1px solid var(--green); }
+.class-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.class-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; }
+.class-item strong { display: block; font-size: 14px; }
+.class-item small { color: var(--muted); font-variant-numeric: tabular-nums; }
+.window { border-left: 4px solid var(--green); }
+.window-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.window-head strong { font-family: var(--font-display); font-size: 18px; font-variant-numeric: tabular-nums; }
+.window-head small { color: var(--muted); }
+.pick { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.pick:first-of-type { border-top: 0; }
+.pick b { font-size: 15px; }
+.pick .when { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--green); text-align: right; }
+.pick .sub { grid-column: 1 / -1; color: var(--muted); font-size: 13px; }
+.badge-best { display: inline-block; white-space: nowrap; background: var(--mint); color: var(--on-green); border-radius: 999px; font-size: 11px; font-weight: 700; padding: 1px 8px; margin-left: 6px; vertical-align: 2px; }
+
+/* Inventario, perfil, comunidad */
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.row small { color: var(--muted); }
+.inline-form { display: flex; gap: 8px; }
+.inline-form input { flex: 1; min-width: 0; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); }
+.post { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+.post p { margin: 6px 0 0; }
+.post small { color: var(--muted); }
+.saved-note { color: var(--green); font-size: 13px; min-height: 18px; font-weight: 600; }
+.example { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--amber-ink); background: var(--amber-soft); border-radius: 6px; padding: 2px 7px; }
+
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+  background: var(--surface); border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px);
+}
+nav.tabs button {
+  border: 0; background: transparent; padding: 9px 0 8px; color: var(--muted); cursor: pointer;
+  font-size: 10.5px; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0;
+}
+nav.tabs button[aria-current="page"] { color: var(--green); font-weight: 700; }
+nav.tabs svg { width: 21px; height: 21px; }
+/* Mapa */
+.map { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 10px; margin-bottom: 14px; }
+.map svg { display: block; width: 100%; height: auto; }
+.m-bg { fill: #EEF4F8; }
+.m-grid { stroke: #DFE7EE; stroke-width: 1; }
+.m-ring { fill: #DDF4E6; fill-opacity: 0.75; stroke: #8FD3AE; stroke-width: 1.5; stroke-dasharray: 4 4; }
+.m-small { font: 500 10px var(--font-body); fill: #4B5563; }
+.m-campus { fill: #C9BFF5; stroke: #FFFFFF; stroke-width: 2; }
+.m-campus-t { font: 800 10px var(--font-display); fill: #3F318F; }
+.m-bar { stroke: #1F2937; stroke-width: 2; }
+.m-north { fill: #1F2937; }
+.pin { cursor: pointer; }
+.pin circle { fill: #BDEBD0; stroke: #1F6F4A; stroke-width: 1.5; }
+.pin.closed circle { fill: #E5E7EB; stroke: #9CA3AF; }
+.pin text { font: 700 10px var(--font-body); fill: #12402A; pointer-events: none; }
+.pin.closed text { fill: #4B5563; }
+.pin.dim { opacity: 0.22; cursor: default; }
+.pin:hover circle, .pin:focus-visible circle { stroke-width: 3; }
+.pin:focus { outline: none; }
+.map-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); padding: 8px 4px 2px; }
+.map-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.num { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--mint); color: var(--on-green); font-size: 12px; font-weight: 700; margin-right: 8px; vertical-align: 1px; }
+.card.flash { box-shadow: 0 0 0 3px #9FDDB9; }
+/* Inicio */
+.hello .date::first-letter { text-transform: uppercase; }
+.hello .date { color: var(--muted); margin: 0; font-size: 13px; font-weight: 500; }
+.hello h2 { font-family: var(--font-display); font-size: 27px; font-weight: 800; letter-spacing: -0.02em; margin: 2px 0; }
+.hello p { margin: 0 0 14px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.stat { border-radius: 14px; padding: 12px; border: 0; text-align: left; cursor: pointer; min-width: 0; color: var(--ink); }
+.stat small { display: block; font-size: 12px; color: var(--muted); font-weight: 500; }
+.stat strong { display: block; font-family: var(--font-display); font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stat.s1 { background: var(--green-soft); } .stat.s2 { background: var(--lav); } .stat.s3 { background: var(--amber-soft); }
+.dash { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 640px) { .dash { grid-template-columns: 1fr 1fr; } }
+.dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.dcard .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.dcard .big { font-family: var(--font-display); font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.25; }
+.dcard p { margin: 0; color: var(--muted); font-size: 14px; }
+.dcard .go { align-self: flex-start; margin-top: auto; }
+.mini { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 14px; padding: 7px 0; border-top: 1px solid var(--line); }
+.mini:first-of-type { border-top: 0; }
+/* Perfil */
+.profile-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--lav); color: var(--lav-ink); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 22px; flex: 0 0 auto; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--chip); border-radius: 12px; padding: 4px; margin-bottom: 18px; }
+.seg button { border: 0; background: transparent; border-radius: 9px; padding: 9px 4px; font-weight: 600; font-size: 14px; color: var(--muted); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(31, 41, 55, 0.14); }
+@media (prefers-reduced-motion: no-preference) { .card, .chip, .btn { transition: background-color .15s ease, transform .15s ease; } }
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#12402A" stroke-width="2.2" stroke-linecap="round"><path d="M12 21c-4.5 0-8-3.5-8-8 5 0 8 3 8 8zM12 21c4.5 0 8-3.5 8-8-5 0-8 3-8 8zM12 21V9M12 9c0-3 2-5 4-6M12 9C12 6 10 4 8 3"/></svg>
+      </div>
+      <h1>EatWell<b>U</b></h1>
+      <small>Comer bien entre clases</small>
+    </div>
+    <div class="search">
+      <input id="q" type="search" placeholder="Busca una receta, ingrediente o lugar" aria-label="Buscar">
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- INICIO -->
+  <section data-view="inicio"><div id="inicio"></div></section>
+
+  <!-- RECETAS -->
+  <section data-view="recetas" hidden>
+    <h2 class="view-title">Recetas para tu bolsillo</h2>
+    <p class="view-sub">Fáciles, rápidas y con el costo aproximado por porción.</p>
+    <div class="panel">
+      <h3>¿Cuánto tienes para comer hoy?</h3>
+      <p>Escribe tu plata disponible o mueve la barra, y te mostramos lo que alcanza.</p>
+      <label class="budget-input" for="presupuesto-num">
+        <span>$</span>
+        <input id="presupuesto-num" type="text" inputmode="numeric" value="15.000" aria-label="Plata disponible para comer hoy">
+      </label>
+      <div class="budget">
+        <input id="presupuesto" type="range" min="0" max="80000" step="1000" value="15000" aria-label="Presupuesto por comida">
+      </div>
+      <div class="quick" role="group" aria-label="Montos rápidos">
+        <button class="chip" data-monto="5000">$5.000</button>
+        <button class="chip" data-monto="10000">$10.000</button>
+        <button class="chip" data-monto="20000">$20.000</button>
+        <button class="chip" data-monto="35000">$35.000</button>
+        <button class="chip" data-monto="50000">$50.000</button>
+      </div>
+    </div>
+    <div class="filters" role="group" aria-label="Filtros de receta">
+      <button class="chip" data-filter="tiempo" data-value="15" aria-pressed="false">Menos de 15 min</button>
+      <button class="chip" data-filter="tiempo" data-value="30" aria-pressed="false">Menos de 30 min</button>
+      <button class="chip" data-filter="tipo" data-value="saludable" aria-pressed="false">Saludable</button>
+      <button class="chip" data-filter="tipo" data-value="economica" aria-pressed="false">Económica</button>
+      <button class="chip" data-filter="inv" data-value="1" aria-pressed="false">Con lo que tengo</button>
+      <button class="chip" data-filter="fav" data-value="1" aria-pressed="false">Mis favoritas</button>
+    </div>
+    <p class="count" id="count-recetas"></p>
+    <div class="grid" id="grid-recetas"></div>
+  </section>
+
+  <!-- LUGARES -->
+  <section data-view="lugares" hidden>
+    <h2 class="view-title">Dónde comer cerca de Los Andes</h2>
+    <p class="view-sub">Lugares reales en City U y alrededor del campus, con su horario y qué tan lleno suele estar.</p>
+    <div class="map">
+      <div id="mapa"></div>
+      <div class="map-legend">
+        <span><i style="background:#BDEBD0;border:1.5px solid #1F6F4A"></i>Abierto</span>
+        <span><i style="background:#E5E7EB;border:1.5px solid #9CA3AF"></i>Cerrado</span>
+        <span><i style="background:#C9BFF5;border-radius:3px"></i>Universidad</span>
+        <span>Toca un número para ver el lugar</span>
+      </div>
+    </div>
+    <div class="filters" role="group" aria-label="Filtros de lugares">
+      <button class="chip" data-lfilter="abierto" aria-pressed="false">Abierto ahora</button>
+      <button class="chip" data-lfilter="cityu" aria-pressed="false">En City U</button>
+      <button class="chip" data-lfilter="barato" aria-pressed="false">Económico ($)</button>
+      <button class="chip" data-lfilter="ligero" aria-pressed="false">Saludable o ligero</button>
+      <button class="chip" data-lfilter="cerca" aria-pressed="false">A 5 min caminando</button>
+      <button class="chip" data-lfilter="fav" aria-pressed="false">Mis favoritos</button>
+    </div>
+    <p class="count" id="count-lugares"></p>
+    <div class="grid" id="grid-lugares"></div>
+    <p class="note">Horarios, calificaciones y nivel de precio: Google Maps (consulta de noviembre de 2026). La afluencia es una estimación de EatWellU según las horas pico típicas del almuerzo universitario y la popularidad de cada lugar; no es un dato en tiempo real. Confirma el horario antes de ir.</p>
+  </section>
+
+  <!-- PERFIL (encabezado y subsecciones) -->
+  <section data-view="perfil-head" hidden>
+    <div class="profile-top">
+      <div class="avatar" id="avatar" aria-hidden="true">Tú</div>
+      <div><h2 class="view-title" id="perfil-nombre" style="margin:0">Tu perfil</h2><p class="view-sub" style="margin:0">Tu horario, tu nevera y tus preferencias.</p></div>
+    </div>
+    <div class="seg" role="group" aria-label="Secciones del perfil">
+      <button data-sub="horario" aria-pressed="true">Horario</button>
+      <button data-sub="inventario" aria-pressed="false">Nevera</button>
+      <button data-sub="preferencias" aria-pressed="false">Preferencias</button>
+    </div>
+  </section>
+
+  <!-- HORARIO -->
+  <section data-view="horario" hidden>
+    <h2 class="view-title">Tu horario, tus comidas</h2>
+    <p class="view-sub">Agrega tus clases. EatWellU encuentra tus huecos libres y te dice dónde comer en cada uno, cuándo hay menos gente y si te alcanza el tiempo para ir y volver.</p>
+
+    <div class="daybar" role="group" aria-label="Día" id="daybar"></div>
+
+    <div class="panel">
+      <h3 id="day-title">Lunes</h3>
+      <div class="timeline" id="timeline" aria-hidden="true"></div>
+      <div class="ticks"><span>7:00</span><span>10:00</span><span>13:00</span><span>16:00</span><span>20:00</span></div>
+      <div class="legend"><span class="l-class">Clase</span><span class="l-free">Libre</span></div>
+      <div class="class-list" id="class-list"></div>
+    </div>
+
+    <div id="windows"></div>
+
+    <div class="panel">
+      <h3>Agregar una clase</h3>
+      <form id="form-clase" class="form-row" style="margin-top:10px">
+        <label class="f full">Materia<input id="c-nombre" type="text" placeholder="Ej. Cálculo diferencial" required></label>
+        <label class="f full">Día
+          <select id="c-dia">
+            <option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option>
+            <option value="4">Jueves</option><option value="5">Viernes</option><option value="6">Sábado</option>
+          </select>
+        </label>
+        <label class="f">Empieza<input id="c-ini" type="time" value="08:00" min="06:00" max="21:00" required></label>
+        <label class="f">Termina<input id="c-fin" type="time" value="09:30" min="06:00" max="22:00" required></label>
+        <button class="btn full" type="submit">Agregar clase</button>
+        <div class="saved-note full" id="c-nota" role="status"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- INVENTARIO -->
+  <section data-view="inventario" hidden>
+    <h2 class="view-title">Lo que hay en tu nevera</h2>
+    <p class="view-sub">Anota tus ingredientes y te mostramos qué puedes cocinar sin comprar más.</p>
+    <form class="inline-form" id="form-inv">
+      <input id="inv-nombre" type="text" placeholder="Ej. arroz, huevos, tomate" aria-label="Ingrediente">
+      <button class="btn" type="submit">Agregar</button>
+    </form>
+    <div class="stack" id="lista-inv" style="margin-top:12px"></div>
+  </section>
+
+  <!-- COMUNIDAD -->
+  <section data-view="comunidad" hidden>
+    <h2 class="view-title">Comunidad</h2>
+    <p class="view-sub">Tips de otros estudiantes. <span class="example">Ejemplos</span></p>
+    <div class="stack" id="posts"></div>
+  </section>
+
+  <!-- PERFIL -->
+  <section data-view="preferencias" hidden>
+    <h2 class="view-title">Preferencias</h2>
+    <p class="view-sub">Tus preferencias ajustan lo que te recomendamos.</p>
+    <form class="panel form-row" id="form-perfil">
+      <label class="f full">Nombre<input id="p-nombre" type="text" placeholder="Tu nombre"></label>
+      <label class="f">Presupuesto semanal<input id="p-presupuesto" type="number" min="0" step="1000" value="70000"></label>
+      <label class="f">Tiempo para cocinar
+        <select id="p-tiempo"><option value="15">Menos de 15 min</option><option value="30" selected>Hasta 30 min</option><option value="60">Más de 30 min</option></select>
+      </label>
+      <button class="btn full" type="submit">Guardar preferencias</button>
+      <div class="saved-note full" id="p-nota" role="status"></div>
+    </form>
+  </section>
+</main>
+
+<nav class="tabs" aria-label="Secciones">
+  <button data-tab="inicio" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>Inicio</button>
+  <button data-tab="recetas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 11h16M5 11a7 7 0 0 1 14 0M3 15h18l-2 5H5z"/></svg>Recetas</button>
+  <button data-tab="lugares"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Lugares</button>
+  <button data-tab="comunidad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M15 15c3 0 6 1.5 6 4.5"/></svg>Comunidad</button>
+  <button data-tab="perfil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Perfil</button>
+</nav>
+
+<script>
+/* ---------- Datos ---------- */
+const CAMPUS = { lat: 4.601458, lng: -74.066133 };
+const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+const DIAS_CORTOS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+const h = (hh, mm = 0) => hh * 60 + mm;
+
+// Horarios por día (0 = domingo). Fuente: Google Maps, noviembre de 2026.
+const LUGARES = [
+  { id: "poke", nombre: "Poke City U", tipo: "Bowls de poke", ligero: true, precio: 2, rating: 4.8, resenas: 627,
+    dir: "Calle 19 # 2A-10, City U, local 208", lat: 4.603285, lng: -74.066881, cityu: true,
+    placeId: "ChIJiwZrXXiZP44RNV6ZZpia040",
+    horas: [[h(11), h(17)], [h(11), h(19)], [h(11), h(19)], [h(11), h(19)], [h(11), h(19)], [h(11), h(19)], [h(11), h(19)]],
+    nota: "Bowls armados con proteína, base y verduras frescas." },
+  { id: "wok", nombre: "Wok City U", tipo: "Cocina asiática", ligero: true, precio: 2, rating: 4.1, resenas: 105,
+    dir: "Av. Calle 19 # 2A-10, City U, locales 205-206", lat: 4.603543, lng: -74.067153, cityu: true,
+    placeId: "ChIJie3iGQCZP44R1ms52DERgaY",
+    horas: [[h(11, 45), h(19, 30)], [h(11, 30), h(21)], [h(11, 30), h(21)], [h(11, 30), h(21)], [h(11, 30), h(21)], [h(11, 30), h(21)], [h(11, 30), h(21)]],
+    nota: "Wok, curry y rollos primavera; tiene opciones con verduras." },
+  { id: "buffalo", nombre: "Buffalo Wings City U", tipo: "Alitas", ligero: false, precio: 2, rating: 4.4, resenas: 978,
+    dir: "Calle 19 # 2A-10, City U, local 315", lat: 4.602947, lng: -74.067307, cityu: true,
+    placeId: "ChIJqxZjbaOZP44RhzlfnLIZ8kU",
+    horas: [[h(11, 30), h(19)], [h(11, 30), h(20)], [h(11, 30), h(20)], [h(11, 30), h(20)], [h(11, 30), h(21)], [h(11, 30), h(21)], [h(11, 30), h(21)]],
+    nota: "Alitas con zanahoria y apio; vista a Monserrate." },
+  { id: "bogotastore", nombre: "Bogotá Store Café", tipo: "Café y almuerzo", ligero: true, precio: 2, rating: 4.6, resenas: 146,
+    dir: "Carrera 2A # 18A-38", lat: 4.602039, lng: -74.067393, cityu: false,
+    placeId: "ChIJX0RGijSZP44RGdClnemk29Y",
+    horas: [[h(11), h(18)], [h(8), h(20)], [h(8), h(20)], [h(8), h(20)], [h(8), h(20)], [h(8), h(20)], [h(8), h(20)]],
+    nota: "Opciones veganas, sin lácteos y sin gluten; buen sitio para desayunar." },
+  { id: "magola", nombre: "Casa Magola", tipo: "Café, desayuno y almuerzo", ligero: false, precio: 2, rating: 4.6, resenas: 3436,
+    dir: "Carrera 2A # 17-60", lat: 4.601451, lng: -74.067866, cityu: false,
+    placeId: "ChIJe1_LhqSZP44R3jXixKNNa2c",
+    horas: [[h(8, 30), h(19)], [h(9), h(21)], [h(9), h(21)], [h(9), h(21)], [h(9), h(22)], [h(9), h(23)], [h(8, 30), h(23)]],
+    nota: "Café de origen, desayunos y almuerzos a pocos pasos del campus." },
+  { id: "nena", nombre: "La Nena Restaurante", tipo: "Cocina de autor", ligero: false, precio: 2, rating: 5.0, resenas: 52,
+    dir: "Calle 19A # 4-08", lat: 4.602181, lng: -74.064485, cityu: false,
+    placeId: "ChIJQUF4gGWZP44R3Z7W1dQ61eo",
+    horas: [null, [h(10), h(18)], [h(10), h(18)], [h(10), h(18)], [h(10), h(18)], [h(10), h(20)], [h(10), h(20)]],
+    nota: "Ingredientes frescos y carnes de buena calidad; algo más costoso." },
+  { id: "khalifa", nombre: "El Khalifa Shawarma", tipo: "Comida árabe", ligero: true, precio: 2, rating: 4.4, resenas: 1756,
+    dir: "Calle 12D # 4-30, La Candelaria", lat: 4.600409, lng: -74.070723, cityu: false,
+    placeId: "ChIJR4i4GKSZP44R4WGvsmNOcYQ",
+    horas: [[h(11, 30), h(18)], [h(11, 30), h(20, 30)], [h(11, 30), h(20, 30)], [h(11, 30), h(20, 30)], [h(11, 30), h(21)], [h(11, 30), h(21)], [h(11, 30), h(21)]],
+    nota: "Falafel, hummus, tabule y plato vegetariano." },
+  { id: "vidarosa", nombre: "La Vida en Rosa", tipo: "Menú del día", ligero: false, precio: 1, rating: 4.1, resenas: 291,
+    dir: "Carrera 4 # 12D-44, La Candelaria", lat: 4.600286, lng: -74.07033, cityu: false,
+    placeId: "ChIJU10vfqaZP44RE5cD0lRf3Ik",
+    horas: [[h(8), h(20)], [h(12), h(24)], [h(12), h(24)], [h(12), h(24)], [h(12), h(24)], [h(12), h(24)], [h(12), h(24)]],
+    nota: "Menú del día con sopa, plato fuerte, ensalada y jugo (reseñas recientes hablan de unos $14.000)." }
+];
+
+const RECETAS = [
+  { id: 1, nombre: "Arroz con pollo y verduras", costo: 7500, tiempo: 25, tipo: "saludable", ingredientes: ["Arroz", "Pollo", "Zanahoria", "Arveja"], pasos: "Dora el pollo, agrega el arroz y las verduras, y cocina con caldo 20 min." },
+  { id: 2, nombre: "Huevos pericos con arepa", costo: 3500, tiempo: 10, tipo: "economica", ingredientes: ["Huevos", "Tomate", "Cebolla", "Arepa"], pasos: "Sofríe tomate y cebolla, agrega los huevos batidos y sirve con arepa." },
+  { id: 3, nombre: "Lentejas guisadas", costo: 4500, tiempo: 35, tipo: "economica", ingredientes: ["Lentejas", "Zanahoria", "Cebolla", "Arroz"], pasos: "Cocina las lentejas con sofrito y zanahoria hasta que estén blandas." },
+  { id: 4, nombre: "Ensalada de atún y maíz", costo: 6000, tiempo: 10, tipo: "saludable", ingredientes: ["Atún", "Lechuga", "Maíz", "Tomate"], pasos: "Mezcla todo y sazona con limón, sal y un poco de aceite." },
+  { id: 5, nombre: "Pasta integral con verduras", costo: 5500, tiempo: 20, tipo: "saludable", ingredientes: ["Pasta", "Calabacín", "Ajo", "Tomate"], pasos: "Cocina la pasta, saltea las verduras con ajo y mezcla." },
+  { id: 6, nombre: "Avena con banano", costo: 2500, tiempo: 5, tipo: "economica", ingredientes: ["Avena", "Banano", "Leche"], pasos: "Cocina la avena en leche y sírvela con banano en rodajas." },
+  { id: 7, nombre: "Wrap de pollo para llevar", costo: 6500, tiempo: 15, tipo: "saludable", ingredientes: ["Tortilla", "Pollo", "Lechuga", "Tomate"], pasos: "Dora el pollo en tiras, arma el wrap y envuélvelo para la U." },
+  { id: 8, nombre: "Calentado de frijoles", costo: 4000, tiempo: 12, tipo: "economica", ingredientes: ["Frijoles", "Arroz", "Huevos", "Cebolla"], pasos: "Saltea arroz y frijoles con cebolla y corónalo con un huevo." },
+  { id: 9, nombre: "Bowl de salmón y aguacate", costo: 22000, tiempo: 20, tipo: "saludable", ingredientes: ["Salmón", "Arroz", "Aguacate", "Pepino"], pasos: "Sella el salmón, sirve sobre arroz con aguacate y pepino en láminas." },
+  { id: 10, nombre: "Lomo de res con papa y ensalada", costo: 26000, tiempo: 30, tipo: "saludable", ingredientes: ["Carne de res", "Papa", "Lechuga", "Tomate"], pasos: "Asa el lomo, cocina la papa al horno o sartén y acompaña con ensalada." },
+  { id: 11, nombre: "Pechuga a la plancha con quinua", costo: 14000, tiempo: 25, tipo: "saludable", ingredientes: ["Pollo", "Quinua", "Brócoli", "Limón"], pasos: "Cocina la quinua, asa la pechuga y saltea el brócoli con limón." }
+];
+
+const POSTS = [
+  { autor: "Estudiante de Ingeniería", texto: "Si tienes clase a la 1, almuerza a las 11:45: en City U casi no hay fila.", t: "hace 2 días" },
+  { autor: "Estudiante de Economía", texto: "La avena con banano me salva cuando tengo clases seguidas toda la mañana.", t: "hace 4 días" },
+  { autor: "Estudiante de Diseño", texto: "Preparo wraps el domingo y los llevo en la semana. Ahorro mucho.", t: "hace 1 semana" }
+];
+
+// Horario de ejemplo (editable)
+const CLASES_EJEMPLO = [
+  { id: "e1", nombre: "Cálculo diferencial", dia: 1, ini: h(7), fin: h(8, 20) },
+  { id: "e2", nombre: "Programación en Python", dia: 1, ini: h(9, 30), fin: h(10, 50) },
+  { id: "e3", nombre: "Intro. a Ing. Industrial", dia: 1, ini: h(14), fin: h(15, 20) },
+  { id: "e4", nombre: "Cálculo diferencial", dia: 3, ini: h(7), fin: h(8, 20) },
+  { id: "e5", nombre: "Programación en Python", dia: 3, ini: h(11), fin: h(12, 20) },
+  { id: "e6", nombre: "Constitución y democracia", dia: 3, ini: h(16), fin: h(17, 20) },
+  { id: "e7", nombre: "Intro. a Ing. Industrial", dia: 2, ini: h(10), fin: h(11, 20) },
+  { id: "e8", nombre: "Español", dia: 2, ini: h(13), fin: h(14, 20) },
+  { id: "e9", nombre: "Intro. a Ing. Industrial", dia: 4, ini: h(10), fin: h(11, 20) },
+  { id: "e10", nombre: "Español", dia: 4, ini: h(13), fin: h(14, 20) },
+  { id: "e11", nombre: "Cálculo diferencial", dia: 5, ini: h(7), fin: h(8, 20) },
+  { id: "e12", nombre: "Programación en Python", dia: 5, ini: h(12), fin: h(13, 20) }
+];
+
+/* ---------- Utilidades ---------- */
+function loadJSON(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
+function saveJSON(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
+const fmt = n => "$" + n.toLocaleString("es-CO");
+const hhmm = m => { const hh = Math.floor(m / 60), mm = m % 60; return hh + ":" + String(mm).padStart(2, "0"); };
+const toMin = s => { const [a, b] = s.split(":").map(Number); return a * 60 + b; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+function distanciaM(a, b) {
+  const R = 6371000, toR = x => x * Math.PI / 180;
+  const dLat = toR(b.lat - a.lat), dLng = toR(b.lng - a.lng);
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(toR(a.lat)) * Math.cos(toR(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+// Bogotá centro tiene pendientes: ~65 m por minuto y un factor de 1,3 por calles no rectas.
+LUGARES.forEach(l => {
+  l.metros = Math.round(distanciaM(CAMPUS, l) * 1.3 / 10) * 10;
+  l.caminar = Math.max(2, Math.ceil(l.metros / 65));
+});
+LUGARES.slice().sort((a, b) => a.metros - b.metros).forEach((l, i) => { l.num = i + 1; });
+
+// Afluencia estimada: curva típica de un día de clases + popularidad del lugar.
+const CURVA = { 7: .15, 8: .3, 9: .3, 10: .35, 11: .55, 12: .95, 13: 1, 14: .7, 15: .4, 16: .4, 17: .5, 18: .6, 19: .5, 20: .4, 21: .3, 22: .2, 23: .15 };
+function afluencia(lugar, dia, minuto) {
+  const hora = Math.floor(minuto / 60);
+  let base = CURVA[hora] ?? .1;
+  if (dia === 0) base *= .6;
+  if (dia === 6) base *= .75;
+  const pop = .7 + .3 * Math.min(1, Math.log10(lugar.resenas) / 3.5);
+  return base * pop;
+}
+const nivel = v => v < .45 ? 1 : v < .72 ? 2 : 3;
+const NIVEL_TXT = { 1: "Poca gente", 2: "Algo lleno", 3: "Muy lleno" };
+const dots = n => `<span class="dots" data-level="${n}"><i></i><i></i><i></i></span>`;
+
+function abiertoEn(lugar, dia, minuto) {
+  const r = lugar.horas[dia];
+  return !!r && minuto >= r[0] && minuto < r[1];
+}
+function ahora() { const d = new Date(); return { dia: d.getDay(), min: d.getHours() * 60 + d.getMinutes() }; }
+
+/* ---------- Estado ---------- */
+const state = {
+  presupuesto: 15000,
+  filtros: { tiempo: null, tipo: null, fav: false, inv: false },
+  lfiltros: new Set(),
+  busqueda: "",
+  favRecetas: loadJSON("ewu.favRecetas", []),
+  favLugares: loadJSON("ewu.favLugares", []),
+  inventario: loadJSON("ewu.inventario", ["Arroz", "Huevos", "Tomate"]),
+  perfil: loadJSON("ewu.perfil", { nombre: "", presupuesto: 70000, tiempo: "30" }),
+  clases: loadJSON("ewu.clases", CLASES_EJEMPLO),
+  diaVista: (() => { const d = new Date().getDay(); return d === 0 ? 1 : d; })()
+};
+
+/* ---------- Recetas ---------- */
+function renderRecetas() {
+  const q = state.busqueda.toLowerCase(), f = state.filtros;
+  const inv = state.inventario.map(x => x.toLowerCase());
+  let lista = RECETAS.filter(r => r.costo <= state.presupuesto);
+  if (q) lista = lista.filter(r => r.nombre.toLowerCase().includes(q) || r.ingredientes.some(i => i.toLowerCase().includes(q)));
+  if (f.tiempo) lista = lista.filter(r => r.tiempo <= Number(f.tiempo));
+  if (f.tipo) lista = lista.filter(r => r.tipo === f.tipo);
+  if (f.fav) lista = lista.filter(r => state.favRecetas.includes(r.id));
+  const tengo = r => r.ingredientes.filter(i => inv.includes(i.toLowerCase())).length;
+  if (f.inv) lista = lista.filter(r => tengo(r) > 0).sort((a, b) => tengo(b) / b.ingredientes.length - tengo(a) / a.ingredientes.length);
+  document.getElementById("count-recetas").textContent = lista.length === 1 ? "1 receta" : lista.length + " recetas";
+  document.getElementById("grid-recetas").innerHTML = lista.length ? lista.map(r => {
+    const fav = state.favRecetas.includes(r.id), t = tengo(r);
+    return `<article class="card">
+      <div class="card-head"><h4>${r.nombre}</h4><span class="price">${fmt(r.costo)}</span></div>
+      <div class="meta"><span class="tag ${r.tipo === "saludable" ? "health" : "cheap"}">${r.tipo === "saludable" ? "Saludable" : "Económica"}</span><span>${r.tiempo} min</span>${t ? `<span>Tienes ${t} de ${r.ingredientes.length} ingredientes</span>` : ""}</div>
+      <p><strong style="color:var(--ink);font-weight:600">Ingredientes:</strong> ${r.ingredientes.join(", ")}.</p>
+      <p>${r.pasos}</p>
+      <div class="actions"><button class="btn ghost" data-fav-receta="${r.id}" aria-pressed="${fav}">${fav ? "♥ Guardada" : "♡ Guardar"}</button></div>
+    </article>`;
+  }).join("") : `<p class="empty">${state.presupuesto < 2500 ? "Con menos de $2.500 no alcanzamos a sugerirte una receta. Revisa tu nevera: quizá tengas ingredientes." : "No hay recetas con estos filtros. Prueba quitar alguno."}</p>`;
+}
+
+/* ---------- Lugares ---------- */
+function horarioHoy(l, dia) {
+  const r = l.horas[dia];
+  return r ? `${hhmm(r[0])} a ${r[1] >= 1440 ? "medianoche" : hhmm(r[1])}` : "Cerrado hoy";
+}
+function renderMapa(visibles) {
+  const ids = new Set(visibles.map(l => l.id));
+  const { dia, min } = ahora();
+  const k = Math.cos(CAMPUS.lat * Math.PI / 180);
+  const mx = p => (p.lng - CAMPUS.lng) * 111320 * k;
+  const my = p => -(p.lat - CAMPUS.lat) * 110540;
+  const R = 5 * 65 / 1.3; // radio en línea recta de 5 min caminando
+  const xs = LUGARES.map(mx), ys = LUGARES.map(my);
+  const minX = Math.min(...xs, -R), maxX = Math.max(...xs, R), minY = Math.min(...ys, -R), maxY = Math.max(...ys, R);
+  const W = 360, H = 260, pad = 24;
+  const s = Math.min((W - 2 * pad) / (maxX - minX), (H - 2 * pad) / (maxY - minY));
+  const ox = (W - (maxX - minX) * s) / 2 - minX * s, oy = (H - (maxY - minY) * s) / 2 - minY * s;
+  const P = p => ({ x: mx(p) * s + ox, y: my(p) * s + oy });
+  const c = P(CAMPUS);
+  const bar = 100 * s;
+  let grid = "";
+  if (bar > 12) {
+    for (let x = c.x % bar; x < W; x += bar) grid += `<line class="m-grid" x1="${x.toFixed(1)}" y1="0" x2="${x.toFixed(1)}" y2="${H}"/>`;
+    for (let y = c.y % bar; y < H; y += bar) grid += `<line class="m-grid" x1="0" y1="${y.toFixed(1)}" x2="${W}" y2="${y.toFixed(1)}"/>`;
+  }
+  const placed = [{ x: c.x, y: c.y }];
+  const pins = LUGARES.slice().sort((a, b) => a.num - b.num).map(l => {
+    let q = P(l), t = 0;
+    while (placed.some(o => Math.hypot(o.x - q.x, o.y - q.y) < 21) && t < 10) { q = { x: q.x - 13, y: q.y - 11 }; t++; }
+    placed.push(q);
+    const vis = ids.has(l.id), ab = abiertoEn(l, dia, min);
+    return `<g class="pin${ab ? "" : " closed"}${vis ? "" : " dim"}" ${vis ? `data-pin="${l.id}" tabindex="0" role="button"` : ""} aria-label="${l.num}. ${esc(l.nombre)}, ${ab ? "abierto" : "cerrado"}, ${l.caminar} minutos caminando">
+      <circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="10"/>
+      <text x="${q.x.toFixed(1)}" y="${(q.y + 3.5).toFixed(1)}" text-anchor="middle">${l.num}</text></g>`;
+  }).join("");
+  const rr = R * s;
+  document.getElementById("mapa").innerHTML = `
+  <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Mapa a escala de los lugares cercanos a la Universidad de los Andes">
+    <rect class="m-bg" width="${W}" height="${H}" rx="12"/>
+    ${grid}
+    <circle class="m-ring" cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${rr.toFixed(1)}"/>
+    <text class="m-small" x="${c.x.toFixed(1)}" y="${(c.y + rr - 6).toFixed(1)}" text-anchor="middle">5 min caminando</text>
+    <rect class="m-campus" x="${(c.x - 10).toFixed(1)}" y="${(c.y - 10).toFixed(1)}" width="20" height="20" rx="5"/>
+    <text class="m-campus-t" x="${c.x.toFixed(1)}" y="${(c.y + 3.5).toFixed(1)}" text-anchor="middle">U</text>
+    <text class="m-small" x="${(c.x + 14).toFixed(1)}" y="${(c.y + 22).toFixed(1)}" text-anchor="middle">Uniandes</text>
+    ${pins}
+    <g transform="translate(${W - 22} 24)"><path class="m-north" d="M0 -12 L6 4 L0 0 L-6 4 Z"/><text class="m-small" x="0" y="16" text-anchor="middle">N</text></g>
+    <line class="m-bar" x1="14" y1="${H - 16}" x2="${(14 + bar).toFixed(1)}" y2="${H - 16}"/>
+    <line class="m-bar" x1="14" y1="${H - 20}" x2="14" y2="${H - 12}"/>
+    <line class="m-bar" x1="${(14 + bar).toFixed(1)}" y1="${H - 20}" x2="${(14 + bar).toFixed(1)}" y2="${H - 12}"/>
+    <text class="m-small" x="${(18 + bar).toFixed(1)}" y="${H - 12}">100 m</text>
+  </svg>`;
+}
+function irALugar(id) {
+  const el = document.getElementById("lugar-" + id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.classList.add("flash");
+  setTimeout(() => el.classList.remove("flash"), 1600);
+}
+function renderLugares() {
+  const { dia, min } = ahora(), q = state.busqueda.toLowerCase(), F = state.lfiltros;
+  let lista = LUGARES.slice();
+  if (q) lista = lista.filter(l => (l.nombre + " " + l.tipo).toLowerCase().includes(q));
+  if (F.has("abierto")) lista = lista.filter(l => abiertoEn(l, dia, min));
+  if (F.has("cityu")) lista = lista.filter(l => l.cityu);
+  if (F.has("barato")) lista = lista.filter(l => l.precio === 1);
+  if (F.has("ligero")) lista = lista.filter(l => l.ligero);
+  if (F.has("cerca")) lista = lista.filter(l => l.caminar <= 5);
+  if (F.has("fav")) lista = lista.filter(l => state.favLugares.includes(l.id));
+  lista.sort((a, b) => a.caminar - b.caminar);
+  document.getElementById("count-lugares").textContent = lista.length === 1 ? "1 lugar" : lista.length + " lugares";
+  document.getElementById("grid-lugares").innerHTML = lista.length ? lista.map(l => {
+    const ab = abiertoEn(l, dia, min), fav = state.favLugares.includes(l.id);
+    const n = nivel(afluencia(l, dia, min));
+    const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.nombre + " " + l.dir + " Bogotá")}&query_place_id=${l.placeId}`;
+    return `<article class="card" id="lugar-${l.id}">
+      <div class="card-head"><h4><span class="num" aria-hidden="true">${l.num}</span>${l.nombre}</h4><span class="price" title="Nivel de precio en Google">${"$".repeat(l.precio)}</span></div>
+      <div class="meta">
+        <span class="tag ${l.ligero ? "health" : "neutral"}">${l.tipo}</span>
+        ${l.cityu ? `<span class="tag neutral">City U</span>` : ""}
+        <span>★ ${l.rating.toFixed(1)} (${l.resenas.toLocaleString("es-CO")} reseñas)</span>
+      </div>
+      <p>${l.nota}</p>
+      <div class="meta">
+        <span>${l.caminar} min caminando · ${l.metros} m</span>
+        <span>Hoy: ${horarioHoy(l, dia)}</span>
+      </div>
+      <div class="meta">
+        <span class="status ${ab ? "open" : "closed"}">${ab ? "Abierto ahora" : "Cerrado ahora"}</span>
+        ${ab ? `<span class="demand">${dots(n)} ${NIVEL_TXT[n]} (estimado)</span>` : ""}
+      </div>
+      <p style="font-size:13px">${esc(l.dir)}</p>
+      <div class="actions">
+        <button class="btn ghost" data-fav-lugar="${l.id}" aria-pressed="${fav}">${fav ? "♥ Guardado" : "♡ Guardar"}</button>
+        <a class="btn link" href="${maps}" target="_blank" rel="noopener">Ver en Google Maps →</a>
+      </div>
+    </article>`;
+  }).join("") : `<p class="empty">Ningún lugar cumple estos filtros.</p>`;
+  renderMapa(lista);
+}
+
+/* ---------- Horario ---------- */
+const DIA_INI = h(7), DIA_FIN = h(20), MIN_HUECO = 30;
+function huecos(dia) {
+  const cls = state.clases.filter(c => c.dia === dia).sort((a, b) => a.ini - b.ini);
+  const out = []; let cursor = DIA_INI;
+  for (const c of cls) {
+    if (c.ini - cursor >= MIN_HUECO) out.push([cursor, c.ini]);
+    cursor = Math.max(cursor, c.fin);
+  }
+  if (DIA_FIN - cursor >= MIN_HUECO) out.push([cursor, DIA_FIN]);
+  return out;
+}
+function opcionesEnHueco(dia, ini, fin) {
+  const res = [];
+  for (const l of LUGARES) {
+    const r = l.horas[dia]; if (!r) continue;
+    // Debe poder salir, comer al menos 20 min y volver a tiempo.
+    const llegada = Math.max(ini + l.caminar, r[0]);
+    const salidaMax = Math.min(fin - l.caminar, r[1]);
+    if (salidaMax - llegada < 20) continue;
+    // Busca el inicio con menos gente en pasos de 15 min.
+    // Prefiere horas normales de comida (almuerzo 11:45-14:00) y, dentro de ellas, la de menos gente.
+    const almuerzoPosible = salidaMax > h(11, 45) && llegada < h(14);
+    let mejor = null;
+    for (let t = llegada; t + 20 <= salidaMax; t += 15) {
+      const v = afluencia(l, dia, t);
+      const fuera = almuerzoPosible && (t < h(11, 45) || t > h(14));
+      const score = v + (fuera ? 0.6 : 0);
+      if (!mejor || score < mejor.score) mejor = { t, v, score };
+    }
+    const comer = Math.min(45, salidaMax - mejor.t);
+    res.push({ l, t: mejor.t, v: mejor.v, score: mejor.score, comer, salir: mejor.t - l.caminar });
+  }
+  return res.sort((a, b) => a.score - b.score || a.l.caminar - b.l.caminar);
+}
+function etiquetaComida(m, f) {
+  if (f > h(11, 45) && m < h(14)) return "Almuerzo";
+  if (m < h(10, 30)) return "Desayuno";
+  if (m < h(15, 30)) return "Almuerzo";
+  if (m < h(17, 30)) return "Algo de media tarde";
+  return "Comida";
+}
+function renderHorario() {
+  const dia = state.diaVista;
+  document.getElementById("daybar").innerHTML = [1, 2, 3, 4, 5, 6].map(d =>
+    `<button class="chip" data-dia="${d}" aria-pressed="${d === dia}">${DIAS_CORTOS[d]}</button>`).join("");
+  document.getElementById("day-title").textContent = DIAS[dia];
+
+  const span = DIA_FIN - DIA_INI;
+  const cls = state.clases.filter(c => c.dia === dia).sort((a, b) => a.ini - b.ini);
+  document.getElementById("timeline").innerHTML = cls.map(c => {
+    const left = Math.max(0, (c.ini - DIA_INI) / span * 100), w = Math.max(1.5, (Math.min(c.fin, DIA_FIN) - Math.max(c.ini, DIA_INI)) / span * 100);
+    return `<div class="cls" style="left:${left}%;width:${w}%"><span>${esc(c.nombre)}</span></div>`;
+  }).join("");
+  document.getElementById("class-list").innerHTML = cls.length ? cls.map(c => `
+    <div class="class-item">
+      <div><strong>${esc(c.nombre)}</strong><small>${hhmm(c.ini)} a ${hhmm(c.fin)}</small></div>
+      <button class="btn ghost" data-del-clase="${c.id}" aria-label="Quitar ${esc(c.nombre)}">Quitar</button>
+    </div>`).join("") : `<p class="empty" style="padding:12px 0">No tienes clases este día.</p>`;
+
+  const hs = huecos(dia);
+  const cont = document.getElementById("windows");
+  if (!hs.length) { cont.innerHTML = `<div class="panel"><p>No tienes huecos de ${MIN_HUECO} minutos o más entre 7:00 y 20:00. Lleva algo preparado desde casa: mira las recetas para llevar.</p></div>`; return; }
+  cont.innerHTML = hs.map(([ini, fin]) => {
+    const ops = opcionesEnHueco(dia, ini, fin);
+    const dur = fin - ini;
+    const top = ops.slice(0, 4);
+    return `<div class="panel window">
+      <div class="window-head"><strong>${hhmm(ini)} a ${hhmm(fin)}</strong><small>${etiquetaComida(ini, fin)} · ${dur >= 60 ? Math.floor(dur / 60) + " h " : ""}${dur % 60 ? dur % 60 + " min" : ""} libres</small></div>
+      ${top.length ? top.map((o, i) => {
+        const n = nivel(o.v);
+        return `<div class="pick">
+          <b>${o.l.nombre}${i === 0 ? `<span class="badge-best">Mejor opción</span>` : ""}</b>
+          <span class="when">Llega ${hhmm(o.t)}</span>
+          <span class="sub">${dots(n)} ${NIVEL_TXT[n]} a esa hora · sal a las ${hhmm(o.salir)} (${o.l.caminar} min caminando) · tienes ~${o.comer} min para comer · ${"$".repeat(o.l.precio)}</span>
+        </div>`;
+      }).join("") : `<p style="margin:8px 0 0">Ningún lugar cercano está abierto el tiempo suficiente en este hueco. Lleva un snack o una receta para llevar.</p>`}
+    </div>`;
+  }).join("") + `<p class="note">La recomendación cruza tus huecos con el horario real de cada lugar, el tiempo para ir y volver caminando desde el campus y la afluencia estimada. Busca el momento con menos gente dentro de tu hueco.</p>`;
+}
+
+/* ---------- Nevera, comunidad, perfil ---------- */
+function renderInventario() {
+  const el = document.getElementById("lista-inv");
+  if (!state.inventario.length) { el.innerHTML = `<p class="empty">Agrega lo que tienes en casa para ver qué puedes cocinar.</p>`; return; }
+  el.innerHTML = state.inventario.map((item, i) => {
+    const n = RECETAS.filter(r => r.ingredientes.some(x => x.toLowerCase() === item.toLowerCase())).length;
+    return `<div class="row"><div><strong>${esc(item)}</strong><br><small>${n ? `Sirve para ${n} receta${n > 1 ? "s" : ""}` : "Aún no está en nuestras recetas"}</small></div>
+      <button class="btn ghost" data-del-inv="${i}">Quitar</button></div>`;
+  }).join("");
+}
+function renderComunidad() {
+  document.getElementById("posts").innerHTML = POSTS.map(p => `<div class="post"><strong>${p.autor}</strong> <small>· ${p.t}</small><p>${p.texto}</p></div>`).join("");
+}
+function renderPerfil() {
+  document.getElementById("p-nombre").value = state.perfil.nombre;
+  document.getElementById("p-presupuesto").value = state.perfil.presupuesto;
+  document.getElementById("p-tiempo").value = state.perfil.tiempo;
+}
+
+/* ---------- Eventos ---------- */
+const pres = document.getElementById("presupuesto");
+const presNum = document.getElementById("presupuesto-num");
+function setPresupuesto(v, desde) {
+  v = Math.max(0, Math.min(1000000, Math.round(v) || 0));
+  state.presupuesto = v;
+  if (desde !== "range") pres.value = Math.min(v, Number(pres.max));
+  if (desde !== "num") presNum.value = v.toLocaleString("es-CO");
+  document.querySelectorAll("[data-monto]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.monto) === v)));
+  renderRecetas();
+}
+pres.addEventListener("input", () => setPresupuesto(Number(pres.value), "range"));
+presNum.addEventListener("input", () => {
+  const limpio = presNum.value.replace(/\D/g, "");
+  setPresupuesto(Number(limpio), "num");
+});
+presNum.addEventListener("blur", () => { presNum.value = state.presupuesto.toLocaleString("es-CO"); });
+document.querySelectorAll("[data-monto]").forEach(b => b.addEventListener("click", () => setPresupuesto(Number(b.dataset.monto))));
+document.getElementById("q").addEventListener("input", e => { state.busqueda = e.target.value.trim(); renderRecetas(); renderLugares(); });
+
+document.querySelectorAll("[data-filter]").forEach(btn => btn.addEventListener("click", () => {
+  const key = btn.dataset.filter, val = btn.dataset.value, on = btn.getAttribute("aria-pressed") !== "true";
+  if (key === "fav" || key === "inv") state.filtros[key] = on;
+  else {
+    state.filtros[key] = on ? val : null;
+    document.querySelectorAll(`[data-filter="${key}"]`).forEach(b => b.setAttribute("aria-pressed", "false"));
+  }
+  btn.setAttribute("aria-pressed", String(on));
+  renderRecetas();
+}));
+document.querySelectorAll("[data-lfilter]").forEach(btn => btn.addEventListener("click", () => {
+  const key = btn.dataset.lfilter, on = btn.getAttribute("aria-pressed") !== "true";
+  btn.setAttribute("aria-pressed", String(on));
+  on ? state.lfiltros.add(key) : state.lfiltros.delete(key);
+  renderLugares();
+}));
+
+document.addEventListener("click", e => {
+  const go = e.target.closest("[data-go]") || e.target.closest(".seg [data-sub]");
+  const pin = e.target.closest("[data-pin]");
+  if (pin) { irALugar(pin.dataset.pin); return; }
+  if (go) { const t = go.dataset.go || go.dataset.sub; try { history.replaceState(null, "", "#" + t); } catch (er) {} showTab(t); window.scrollTo({ top: 0 }); return; }
+  const r = e.target.closest("[data-fav-receta]");
+  if (r) { const id = Number(r.dataset.favReceta); state.favRecetas = state.favRecetas.includes(id) ? state.favRecetas.filter(x => x !== id) : [...state.favRecetas, id]; saveJSON("ewu.favRecetas", state.favRecetas); renderRecetas(); return; }
+  const l = e.target.closest("[data-fav-lugar]");
+  if (l) { const id = l.dataset.favLugar; state.favLugares = state.favLugares.includes(id) ? state.favLugares.filter(x => x !== id) : [...state.favLugares, id]; saveJSON("ewu.favLugares", state.favLugares); renderLugares(); return; }
+  const d = e.target.closest("[data-del-inv]");
+  if (d) { state.inventario.splice(Number(d.dataset.delInv), 1); saveJSON("ewu.inventario", state.inventario); renderInventario(); renderRecetas(); return; }
+  const dd = e.target.closest("[data-dia]");
+  if (dd) { state.diaVista = Number(dd.dataset.dia); document.getElementById("c-dia").value = String(state.diaVista); renderHorario(); return; }
+  const dc = e.target.closest("[data-del-clase]");
+  if (dc) { state.clases = state.clases.filter(c => c.id !== dc.dataset.delClase); saveJSON("ewu.clases", state.clases); renderHorario(); }
+});
+
+document.getElementById("form-inv").addEventListener("submit", e => {
+  e.preventDefault();
+  const input = document.getElementById("inv-nombre"), v = input.value.trim();
+  if (!v) return;
+  v.split(",").map(s => s.trim()).filter(Boolean).forEach(x => state.inventario.push(x.charAt(0).toUpperCase() + x.slice(1)));
+  saveJSON("ewu.inventario", state.inventario); input.value = ""; renderInventario(); renderRecetas();
+});
+document.getElementById("form-clase").addEventListener("submit", e => {
+  e.preventDefault();
+  const nota = document.getElementById("c-nota");
+  const nombre = document.getElementById("c-nombre").value.trim();
+  const dia = Number(document.getElementById("c-dia").value);
+  const ini = toMin(document.getElementById("c-ini").value), fin = toMin(document.getElementById("c-fin").value);
+  if (!nombre) { nota.textContent = "Escribe el nombre de la materia."; return; }
+  if (fin <= ini) { nota.style.color = "var(--tomato)"; nota.textContent = "La hora de fin debe ser después de la hora de inicio."; return; }
+  state.clases.push({ id: "c" + Date.now(), nombre, dia, ini, fin });
+  saveJSON("ewu.clases", state.clases);
+  state.diaVista = dia;
+  nota.style.color = ""; nota.textContent = `Agregada: ${nombre}, ${DIAS[dia]} de ${hhmm(ini)} a ${hhmm(fin)}.`;
+  document.getElementById("c-nombre").value = "";
+  renderHorario();
+});
+document.getElementById("form-perfil").addEventListener("submit", e => {
+  e.preventDefault();
+  state.perfil = { nombre: document.getElementById("p-nombre").value.trim(), presupuesto: Number(document.getElementById("p-presupuesto").value) || 0, tiempo: document.getElementById("p-tiempo").value };
+  saveJSON("ewu.perfil", state.perfil);
+  document.getElementById("p-nota").textContent = "Preferencias guardadas en este celular.";
+  showTab("preferencias");
+});
+
+/* ---------- Inicio ---------- */
+function renderInicio() {
+  const { dia, min } = ahora();
+  const nombre = state.perfil.nombre;
+  const fecha = new Date().toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" });
+  const alcanza = RECETAS.filter(r => r.costo <= state.presupuesto);
+  const inv = state.inventario.map(x => x.toLowerCase());
+  const tengo = r => r.ingredientes.filter(i => inv.includes(i.toLowerCase())).length;
+  const nevera = RECETAS.slice().sort((a, b) => tengo(b) / b.ingredientes.length - tengo(a) / a.ingredientes.length)[0];
+  const abiertos = LUGARES.filter(l => abiertoEn(l, dia, min)).map(l => ({ l, v: afluencia(l, dia, min) })).sort((a, b) => a.v - b.v);
+
+  // Próximo hueco libre (si hoy es domingo, muestra el lunes)
+  const diaH = dia === 0 ? 1 : dia;
+  const esHoy = diaH === dia;
+  const hs = huecos(diaH).filter(([i, f]) => !esHoy || f > min + 25);
+  let hueco = null;
+  if (hs.length) {
+    const [i, f] = hs[0];
+    const ini = esHoy ? Math.max(i, min) : i;
+    hueco = { ini, fin: f, op: opcionesEnHueco(diaH, ini, f)[0] };
+  }
+
+  document.getElementById("inicio").innerHTML = `
+    <div class="hello">
+      <p class="date">${fecha}</p>
+      <h2>Hola${nombre ? ", " + esc(nombre) : ""}</h2>
+      <p>Esto es lo que tienes para comer bien hoy.</p>
+    </div>
+    <div class="stats">
+      <button class="stat s1" data-go="recetas"><small>Para comer hoy</small><strong>${fmt(state.presupuesto)}</strong></button>
+      <button class="stat s2" data-go="lugares"><small>Abiertos ahora</small><strong>${abiertos.length} lugares</strong></button>
+      <button class="stat s3" data-go="inventario"><small>En tu nevera</small><strong>${state.inventario.length} cosas</strong></button>
+    </div>
+    <div class="dash">
+      <div class="dcard">
+        <span class="eyebrow">${esHoy ? "Tu próximo hueco" : "Mañana, " + DIAS[diaH]}</span>
+        ${hueco ? `<span class="big">${hhmm(hueco.ini)} a ${hhmm(hueco.fin)}</span>
+          ${hueco.op ? `<p>Ve a <strong style="color:var(--ink)">${hueco.op.l.nombre}</strong>: sal a las ${hhmm(hueco.op.salir)} y llegas cuando hay ${NIVEL_TXT[nivel(hueco.op.v)].toLowerCase()}.</p>` : `<p>No hay lugares abiertos en ese hueco. Lleva algo preparado.</p>`}`
+        : `<span class="big">Sin huecos libres</span><p>Hoy no te quedan huecos de 30 minutos. Lleva una receta para llevar.</p>`}
+        <button class="btn go" data-go="horario">Ver mi horario</button>
+      </div>
+      <div class="dcard">
+        <span class="eyebrow">Con tu presupuesto</span>
+        <span class="big">${alcanza.length} de ${RECETAS.length} recetas</span>
+        ${nevera && tengo(nevera) ? `<p>Con lo que tienes en la nevera puedes hacer <strong style="color:var(--ink)">${nevera.nombre}</strong> (tienes ${tengo(nevera)} de ${nevera.ingredientes.length} ingredientes).</p>` : `<p>Agrega ingredientes en tu nevera y te decimos qué cocinar.</p>`}
+        <button class="btn go" data-go="recetas">Ver recetas</button>
+      </div>
+      <div class="dcard">
+        <span class="eyebrow">Con poca gente ahora</span>
+        ${abiertos.length ? abiertos.slice(0, 3).map(o => `<div class="mini"><span>${o.l.nombre}</span><span class="demand">${dots(nivel(o.v))} ${o.l.caminar} min</span></div>`).join("") : `<span class="big">Todo cerrado</span><p>A esta hora los lugares cercanos están cerrados.</p>`}
+        <button class="btn go" data-go="lugares">Ver lugares</button>
+      </div>
+      <div class="dcard">
+        <span class="eyebrow">Comunidad</span>
+        <p style="color:var(--ink)">“${POSTS[0].texto}”</p>
+        <p style="font-size:13px">${POSTS[0].autor} · ${POSTS[0].t}</p>
+        <button class="btn go ghost" data-go="comunidad">Ver más tips</button>
+      </div>
+    </div>`;
+}
+
+const TABS = ["inicio", "recetas", "lugares", "comunidad", "perfil"];
+const SUBS = ["horario", "inventario", "preferencias"];
+let subActual = "horario";
+function showTab(tab) {
+  if (SUBS.includes(tab)) { subActual = tab; tab = "perfil"; }
+  if (!TABS.includes(tab)) tab = "inicio";
+  document.querySelectorAll("nav.tabs button").forEach(b => { if (b.dataset.tab === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  document.querySelectorAll("[data-view]").forEach(v => {
+    const n = v.dataset.view;
+    v.hidden = !(n === tab || (tab === "perfil" && (n === "perfil-head" || n === subActual)));
+  });
+  document.querySelectorAll(".seg [data-sub]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sub === subActual)));
+  const nom = state.perfil.nombre;
+  document.getElementById("perfil-nombre").textContent = nom || "Tu perfil";
+  document.getElementById("avatar").textContent = nom ? nom.trim().charAt(0).toUpperCase() : "Tú";
+  if (tab === "inicio") renderInicio();
+  if (tab === "lugares") renderLugares();
+  if (tab === "perfil" && subActual === "horario") renderHorario();
+  if (tab === "perfil" && subActual === "inventario") renderInventario();
+}
+document.querySelectorAll("nav.tabs button").forEach(btn => btn.addEventListener("click", () => {
+  try { history.replaceState(null, "", "#" + btn.dataset.tab); } catch (e) {}
+  showTab(btn.dataset.tab); window.scrollTo({ top: 0 });
+}));
+window.addEventListener("hashchange", () => showTab(location.hash.slice(1)));
+document.addEventListener("keydown", e => {
+  const pin = e.target.closest && e.target.closest("[data-pin]");
+  if (pin && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); irALugar(pin.dataset.pin); }
+});
+
+document.getElementById("c-dia").value = String(state.diaVista);
+renderPerfil(); renderRecetas(); renderLugares(); renderHorario(); renderInventario(); renderComunidad();
+showTab(location.hash.slice(1) || "inicio");
+setInterval(() => { if (!document.querySelector('[data-view="lugares"]').hidden) renderLugares(); }, 60000);
+</script>
+
+</body>
+</html>
